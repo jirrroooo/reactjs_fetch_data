@@ -1,32 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import useFetch from "./useFetch";
 
 function Reddit() {
-  const [posts, setPosts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState(null);
-
-  useEffect(() => {
-    fetch("https://www.reddit.com/r/peyups.json")
-      .then((response) => response.json())
-      .then((results) => {
-        setIsLoading(false);
-        setPosts(results.data.children);
-      })
-      .catch(error => {
-        setIsLoading(false);
-        setErrorMessage("There was an error!");
-      });
-  }, []);
+  const {
+    data: posts,
+    isLoading,
+    errorMessage,
+  } = useFetch("https://www.reddit.com/r/peyups.json");
 
   return (
+    // <p>Test</p>
     <div>
       <h2>Reddit API</h2>
-      {isLoading && <div>Loading...</div>}
-      {posts && (
+      {isLoading ? (
+        <div>Loading...</div>
+      ) : posts.length == 0 ? <div>{errorMessage}</div> : (
         <ul>
-          {posts.map((post) => (
+          {posts.data.children.map((post) => (
             <li key={post.data.id}>
-              <a href={`https://reddit.com${post.data.permalink}`}>{post.data.title}</a>
+              <a href={`https://reddit.com${post.data.permalink}`}>
+                {post.data.title}
+              </a>
             </li>
           ))}
         </ul>
